@@ -10,8 +10,6 @@ module.exports = function(req, res, next) {
                     res.json(utils.response("failure", { "errmsg": err }));
                 } else {
                     req.sessionuid = decodedToken.sub;
-                    console.log("###############", res.message);
-                    console.log("###############", res.statusCode);
                     next();
                 }
             });

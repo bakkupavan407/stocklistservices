@@ -1,6 +1,8 @@
 var bodyParser = require("body-parser");
 var auth = require("./auth");
-// var stocks = require("../src/stocks/");
+var exchanges = require("../src/exchanges/");
+var stocks = require("../src/stocks/");
+var securities = require("../src/securities");
 
 module.exports = {
 
@@ -24,7 +26,17 @@ module.exports = {
         app.post("/login", auth.login);
         app.post("/register", auth.register);
 
-        // app.get("/api/v1/savestocks", stocks.savestocks);
+        // exchanges
+        app.get("/api/v1/getexchanges", exchanges.getexchanges);
+
+        // securities
+        app.get("/api/v1/getsecurities", securities.getsecurities);
+
+        // stocks
+        app.post("/api/v1/savestocks", stocks.savestocks);
+        app.get("/api/v1/getstocks", stocks.getstocks);
+        app.put("/api/v1/updatestocks", stocks.updatestocks);
+        app.delete("/api/v1/deletestocks", stocks.deletestocks);
 
         // dummy services
         app.get("/", function(req, res) {
