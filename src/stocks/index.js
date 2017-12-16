@@ -2,15 +2,96 @@ var db = require("../../config/dbconfig").db;
 var utils = require("../../utils/response");
 var mongo = require('mongodb');
 var utils = require("../../utils/response");
+var async = require("async");
 
 var stocks = {
 	getstocks: function(req, res) {
 		try {
 			var userid = req.sessionuid;
-			db.stocks.find({userid: userid}).toArray(function (err, result) {
-				if(err) res.json(utils.response("failure", {"errmsg": err}));
-				res.json(utils.response("success", result));
+
+			var myMongoMod = function(stocks, ourCallBack){
+				var finalArray = [];
+				async.forEachLimit(stocks, 1, function(stock, userCallback){
+				    async.waterfall([
+				        function(callback) {
+				            db.exchanges.find({_id:new mongo.ObjectID(stock.selectedExchange)},{name:1},function(err,result){
+								// data.exchange=result[0].name;
+								callback(null, result[0].name);
+							});
+				        },
+				        function(arg1, callback) {
+				            // arg1 now equals 'one' and arg2 now equals 'two'
+				            // console.log("exchange argument ", arg1);
+				            // callback(null, 'three');
+				            db.securities.find({_id:new mongo.ObjectID(stock.selectedSecurity)},{securityname:1},function(err,security){
+								// data.security=security[0].securityname;
+								callback(null, arg1, security[0].securityname);
+							});
+				        },
+				        function(arg1, arg2, callback) {
+				            // arg1 now equals 'three'
+				            stock.exchange = arg1;
+				            stock.security = arg2;
+				            finalArray.push(stock);
+				            callback(null, finalArray);
+				        }
+				    ], function (err, result) {
+				        // result now equals 'done'
+				        userCallback();
+				        if(stocks.length===result.length){
+				        	ourCallBack(result);
+				        }
+				    });
+				}, function(err){
+				    console.log("User For Loop Completed");
+				});
+			}
+
+			db.stocks.find({userid:userid}, function(err, stocks){
+				myMongoMod(stocks, function(finallresult){
+					res.json(utils.response("success", finallresult));
+				});
 			});
+			
+			// async.forEachLimit(users, 1, function(user, userCallback){
+
+			//     async.waterfall([
+			//         function(callback) {
+			//             callback(null, 'one', 'two');
+			//         },
+			//         function(arg1, arg2, callback) {
+			//             // arg1 now equals 'one' and arg2 now equals 'two'
+			//             callback(null, 'three');
+			//         },
+			//         function(arg1, callback) {
+			//             // arg1 now equals 'three'
+			//             callback(null, 'done');
+			//         }
+			//     ], function (err, result) {
+			//         // result now equals 'done'
+			//         console.log('done')
+			//         userCallback();
+			//     });
+
+
+			// }, function(err){
+			//     console.log("User For Loop Completed");
+			// });
+
+			// db.stocks.find({userid:userid}).toArray(function(err,res){
+			// 	var array=[];
+			// 	async.forEachSeries(res,function(data,callback){
+			// 		db.exchanges.find({_id:new mongo.ObjectID(data.selectedExchange)},{name:1},function(err,result){
+			// 			data.exchange=result[0].name;
+			// 		});
+			// 		db.securities.find({_id:new mongo.ObjectID(data.selectedSecurity)},{securityname:1},function(err,security){
+			// 			data.security=security[0].securityname;
+			// 			callback();
+			// 		});
+			// 		array.push(data);
+			// 		console.log(array);
+			// 	});
+			// });
 		} catch(err) {
 			res.json(utils.response("failure", {"errmsg": err}));
 		}
