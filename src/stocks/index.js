@@ -32,6 +32,8 @@ var stocks = {
 				            // arg1 now equals 'three'
 				            stock.exchange = arg1;
 				            stock.security = arg2;
+				            let mydate = new Date(stock.date);
+				            stock.date = mydate.getFullYear() + "-" + mydate.getMonth() + "-" + mydate.getDate();
 				            finalArray.push(stock);
 				            callback(null, finalArray);
 				        }
