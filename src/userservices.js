@@ -1,0 +1,24 @@
+var db = require("../config/dbconfig").db;
+var utils = require("../utils/response");
+var mongo = require('mongodb');
+
+var userservices = {
+	getuserexchanges: function(req, res) {
+		try {
+			db.exchanges.find().toArray(function (err, result) {
+				if(err) res.json(utils.response("failure", {"errmsg": err}));
+				res.json(utils.response("success", result));
+			});
+		} catch(err) {
+			res.json(utils.response("failure", {"errmsg": err}));
+		}
+	},
+	getusersecurities: function(req, res) {
+		db.securities.find().toArray(function (err, result) {
+			if(err) res.json(utils.response("failure", {"errmsg": err}));
+			res.json(utils.response("success", result));
+		});
+	}
+}
+
+module.exports = userservices;

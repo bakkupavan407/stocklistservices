@@ -3,6 +3,8 @@ var auth = require("./auth");
 var exchanges = require("../src/exchanges/");
 var stocks = require("../src/stocks/");
 var securities = require("../src/securities");
+var filters = require("../src/filters");
+var userservices = require("../src/userservices");
 
 module.exports = {
 
@@ -26,6 +28,12 @@ module.exports = {
         // user login registration
         app.post("/login", auth.login);
         app.post("/register", auth.register);
+
+        app.get("/getuserexchanges", userservices.getuserexchanges);
+        app.get("/getusersecurities", userservices.getusersecurities);
+
+        // filters
+        app.post("/getfilterdata", filters.getfilterdata);
 
         // exchanges
         app.get("/api/v1/getexchanges", exchanges.getexchanges);
