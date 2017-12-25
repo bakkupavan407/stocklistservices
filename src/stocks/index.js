@@ -49,7 +49,9 @@ var stocks = {
 				});
 			}
 
-			db.stocks.find({userid:userid}, function(err, stocks){
+			// collection.find({ 'category_id': 10 }).sort({_id: -1}).limit(10, function (e, d) {})
+
+			db.stocks.find().limit(20, function(err, stocks){
 				myMongoMod(stocks, function(finallresult){
 					res.json(utils.response("success", finallresult));
 				});
@@ -104,7 +106,7 @@ var stocks = {
 	      if(!stock){
 	        res.json(utils.response("failure", {"errmsg": "Something wrong with input data!"}));
 	      } else {
-            stock.userid = req.sessionuid;
+            // stock.userid = req.sessionuid;
             stock.timestamp = new Date();
 	        db.stocks.insert(stock, function (err, result) {
 	          if(err) res.json(utils.response("failure", {"errmsg": err}));
@@ -122,7 +124,7 @@ var stocks = {
 			var stockid = stockdata.stockid;
 			var stock_id = new mongo.ObjectID(stockid);
 			var userid = req.sessionuid;
-			var gquery = {"_id": stock_id, "userid": userid};
+			var gquery = {"_id": stock_id};
 			delete stockdata.stockid;
 			db.stocks.update(gquery, {$set: stockdata}, function(err, result){
 				if(err) res.json(utils.response("failure", {"errmsg": err}));
@@ -137,7 +139,7 @@ var stocks = {
 			var stockid = req.body.stockid;
 			var stock_id = new mongo.ObjectID(stockid);
 			var userid = req.sessionuid;
-			var gquery = { "_id": stock_id, "userid": userid};
+			var gquery = { "_id": stock_id};
 
 			db.stocks.remove(gquery, function(err, obj) {
 				if (err) throw err;

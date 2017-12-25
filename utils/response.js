@@ -19,6 +19,7 @@ module.exports = {
             return reobj;
         } else if (status === "failure") {
         	return reobj = {
+                error: true,
                 status: "failure",
                 statusCode: 500,
                 message:  data.cmsg || (data && data.message) || "Something wrong with input data or server connection!"

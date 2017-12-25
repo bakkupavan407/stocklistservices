@@ -7,7 +7,7 @@ var exchanges = {
 	getexchanges: function(req, res) {
 		try {
 			var userid = req.sessionuid;
-			db.exchanges.find({userid: userid}).toArray(function (err, result) {
+			db.exchanges.find().toArray(function (err, result) {
 				if(err) res.json(utils.response("failure", {"errmsg": err}));
 				res.json(utils.response("success", result));
 			});

@@ -7,7 +7,7 @@ var securities = {
 	getsecurities: function(req, res) {
 		try {
 			var userid = req.sessionuid;
-			db.securities.find({userid: userid}).toArray(function (err, result) {
+			db.securities.find().toArray(function (err, result) {
 				if(err) res.json(utils.response("failure", {"errmsg": err}));
 				res.json(utils.response("success", result));
 			});
